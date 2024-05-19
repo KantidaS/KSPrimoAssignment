@@ -6,7 +6,7 @@ import retrofit2.http.GET
 
 interface ApiService {
     interface FeedApi {
-        @GET("feed/@ascend-agency")
+        @GET("feed/@primoapp")
         fun getFeed(): Call<Feed>
     }
 }
