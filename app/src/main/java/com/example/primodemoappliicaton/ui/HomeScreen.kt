@@ -15,7 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.primodemoappliicaton.model.FeedItem
+import com.example.primodemoappliicaton.model.Screen
 import com.example.primodemoappliicaton.ui.common.AppScaffold
 import com.example.primodemoappliicaton.ui.common.ArticleCard
 import com.example.primodemoappliicaton.viewmodel.HomeViewModel
@@ -23,6 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreen(
+    navController: NavHostController,
     viewModel: HomeViewModel = koinViewModel()
 ) {
 
@@ -30,15 +34,19 @@ fun HomeScreen(
         isLoading = viewModel.isLoading.value,
         title = viewModel.title.value,
         itemList = viewModel.itemList,
+        onClickArticle = {
+            navController.navigate("${Screen.ARTICLE.name}/$it")
+        }
     )
 }
 
 @Composable
-fun HomeScreenContent(
+internal fun HomeScreenContent(
     isLoading: Boolean = false,
     title: String = "",
     gridSpan: Int = 1,
     itemList: List<FeedItem> = emptyList(),
+    onClickArticle: ((String) -> Unit)? = null,
 ) {
 
     AppScaffold(
@@ -54,16 +62,15 @@ fun HomeScreenContent(
                 .fillMaxSize()
         ) {
             item(span = { GridItemSpan(gridSpan) }) {
-                Text(text = title)
+                Text(text = title, fontSize = 24.sp)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             items(itemList) { item ->
                 ArticleCard(
                     content = item.content,
-                    link = item.link,
                     onClick = {
-
+                        onClickArticle?.invoke("itemlink")
                     }
                 )
             }
