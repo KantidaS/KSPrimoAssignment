@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PRIMO Demo Appliicaton</string>
+    <string name="common_confirm">Confirm</string>
 </resources>
