@@ -12,11 +12,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.primodemoappliicaton.model.DialogRequest
 import com.example.primodemoappliicaton.model.FeedItem
 import com.example.primodemoappliicaton.model.Screen
 import com.example.primodemoappliicaton.ui.common.AppScaffold
@@ -30,10 +33,12 @@ fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
 
+    val feedItems by viewModel.allFeedItems.observeAsState(emptyList())
+
     HomeScreenContent(
         isLoading = viewModel.isLoading.value,
         title = viewModel.title.value,
-        itemList = viewModel.itemList,
+        itemList = feedItems,
         onClickArticle = {
             navController.navigate("${Screen.ARTICLE.name}/$it")
         }
@@ -42,14 +47,16 @@ fun HomeScreen(
 
 @Composable
 internal fun HomeScreenContent(
+    alertRequest: DialogRequest? = null,
     isLoading: Boolean = false,
     title: String = "",
     gridSpan: Int = 1,
     itemList: List<FeedItem> = emptyList(),
-    onClickArticle: ((String) -> Unit)? = null,
+    onClickArticle: ((Int) -> Unit)? = null,
 ) {
 
     AppScaffold(
+        dialogRequest = alertRequest,
         isLoading = isLoading
     ) {
         LazyVerticalGrid(
@@ -70,7 +77,7 @@ internal fun HomeScreenContent(
                 ArticleCard(
                     content = item.content,
                     onClick = {
-                        onClickArticle?.invoke("itemlink")
+                        onClickArticle?.invoke(item.id)
                     }
                 )
             }

@@ -1,27 +1,37 @@
 package com.example.primodemoappliicaton.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.primodemoappliicaton.https.ApiClient
 import com.example.primodemoappliicaton.https.ApiService
 import com.example.primodemoappliicaton.model.Feed
 import com.example.primodemoappliicaton.model.FeedItem
+import com.example.primodemoappliicaton.repository.FeedRepository
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeViewModel: ViewModel() {
+class HomeViewModel(
+    private val repository: FeedRepository,
+): ViewModel() {
 
-    private var _itemList = mutableStateListOf<FeedItem>()
-    val itemList: List<FeedItem> = _itemList
+    val allFeedItems: LiveData<List<FeedItem>> = repository.allFeedItems
 
     var title = mutableStateOf("")
     var isLoading = mutableStateOf(false)
 
+
     init {
-        loadData()
+        viewModelScope.launch {
+            if(repository.getFeedItemsCount() == 0) {
+                loadData()
+            } else {
+                //TODO: Update
+            }
+        }
     }
 
     private fun loadData() {
@@ -37,8 +47,10 @@ class HomeViewModel: ViewModel() {
                     feed?.channel?.let { channel ->
                         title.value = channel.title
 
-                        if (!channel.items.isNullOrEmpty()) {
-                            _itemList.addAll(channel.items!!)
+                        channel.items?.let {
+                            if(it.isNotEmpty()) {
+                                insertAll(it)
+                            }
                         }
                     }
 
@@ -52,5 +64,9 @@ class HomeViewModel: ViewModel() {
                 //TODO: Handle fail
             }
         })
+    }
+
+    private fun insertAll(feedItems: List<FeedItem>) = viewModelScope.launch {
+        repository.insertAll(feedItems)
     }
 }

@@ -35,14 +35,14 @@ fun AppNavHost(
         }
 
         composable(
-            route = "${NavigationItem.Article.route}/{link}",
-            arguments = listOf(navArgument("link") {
-                type = NavType.StringType
+            route = "${NavigationItem.Article.route}/{feed_id}",
+            arguments = listOf(navArgument("feed_id") {
+                type = NavType.IntType
             })
         ) { backStackEntry ->
             ArticleScreen(
                 navController,
-                backStackEntry.arguments?.getString("link") ?: ""
+                backStackEntry.arguments?.getInt("feed_id")
             )
         }
     }

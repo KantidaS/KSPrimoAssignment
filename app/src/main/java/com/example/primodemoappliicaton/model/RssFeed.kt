@@ -1,5 +1,7 @@
 package com.example.primodemoappliicaton.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import org.simpleframework.xml.Element
 import org.simpleframework.xml.ElementList
 import org.simpleframework.xml.Namespace
@@ -23,13 +25,13 @@ data class Channel(
     var feedImage: FeedImage? = null,
 )
 
+@Entity(tableName = "feed_items")
 @Root(name = "item", strict = false)
 data class FeedItem(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+
     @field:Element(name = "title", required = false)
     var title: String = "",
-
-    @field:ElementList(name = "category", required = false, inline = true)
-    var categories: List<String>? = null,
 
     @field:Element(name = "link", required = false)
     var link: String = "",
