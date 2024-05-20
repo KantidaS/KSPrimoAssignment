@@ -15,14 +15,17 @@ interface FeedItemDao {
     @Query("SELECT * FROM feed_items WHERE id = :id")
     suspend fun getFeedItemById(id: Int): FeedItem?
 
-    @Insert
-    suspend fun insertFeedItem(feedItem: FeedItem)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdateFeedItem(feedItem: FeedItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(feedItems: List<FeedItem>)
 
     @Query("SELECT COUNT(*) FROM feed_items")
     suspend fun getFeedItemsCount(): Int
+
+    @Query("SELECT COUNT(*) FROM feed_items WHERE title = :title")
+    suspend fun getFeedItemCountWithTitle(title: String): Int
 
     @Query("DELETE FROM feed_items")
     suspend fun deleteAll()

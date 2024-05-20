@@ -9,9 +9,9 @@ import kotlinx.coroutines.withContext
 class FeedRepository(private val feedItemDao: FeedItemDao) {
     val allFeedItems: LiveData<List<FeedItem>> = feedItemDao.getAllFeedItems()
 
-    suspend fun insert(feedItem: FeedItem) {
+    suspend fun insertOrUpdateFeedItem(feedItem: FeedItem) {
         withContext(Dispatchers.IO) {
-            feedItemDao.insertFeedItem(feedItem)
+            feedItemDao.insertOrUpdateFeedItem(feedItem)
         }
     }
 
@@ -30,6 +30,13 @@ class FeedRepository(private val feedItemDao: FeedItemDao) {
     suspend fun getFeedItemsCount(): Int {
         return withContext(Dispatchers.IO) {
             feedItemDao.getFeedItemsCount()
+        }
+    }
+
+    suspend fun insertFeedItemIfNotExists(feedItem: FeedItem) {
+        val count = feedItemDao.getFeedItemCountWithTitle(feedItem.title)
+        if (count == 0) {
+            feedItemDao.insertOrUpdateFeedItem(feedItem)
         }
     }
 
